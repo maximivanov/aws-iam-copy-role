@@ -1,0 +1,22 @@
+{
+  "name": "aws-iam-copy-role",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maximivanov/aws-iam-copy-role.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maximivanov/aws-iam-copy-role/issues"
+  },
+  "homepage": "https://github.com/maximivanov/aws-iam-copy-role#readme",
+  "dependencies": {
+    "aws-sdk": "^2.863.0"
+  }
+}
