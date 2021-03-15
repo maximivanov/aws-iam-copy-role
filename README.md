@@ -8,6 +8,8 @@ It will copy trust relationship policy, inline policies and managed polcies (bot
 
 ## Usage
 
+You need Node.js to run the script. If you don't have it installed locally, you can run it in Docker.
+
 Since the script calls AWS SDK it expects AWS credentials to be set in environment variables.
 
 ```bash
