@@ -78,7 +78,7 @@ async function fetchInlinePolicies(roleName) {
     log(`<-- Loaded ${inlinePolicyNames.length} inline policy names.`)
 
     if (inlinePolicyNames.length === 0) {
-        return
+        return []
     }
 
     log('--> Fetching inline policies...')
