@@ -132,7 +132,7 @@ async function fetchManagedPolicies(roleName) {
         managedPolicies = response.AttachedPolicies
 
         if (response.IsTruncated) {
-            managedPolicies = managedPolicies.concat(await fetchInlinePoliciesRecursive(response.Marker))
+            managedPolicies = managedPolicies.concat(await fetchManagedPoliciesRecursive(response.Marker))
         }
 
         return managedPolicies
