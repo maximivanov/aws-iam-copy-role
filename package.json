@@ -16,6 +16,6 @@
   },
   "homepage": "https://github.com/maximivanov/aws-iam-copy-role#readme",
   "dependencies": {
-    "aws-sdk": "^2.863.0"
+    "aws-sdk": "^2.1354.0"
   }
 }
