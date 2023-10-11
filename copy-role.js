@@ -10,7 +10,8 @@ let iam
         const sourceRole = await fetchRole(sourceRoleName)
         const inlinePolicies = await fetchInlinePolicies(sourceRoleName)
         const managedPolicies = await fetchManagedPolicies(sourceRoleName)
-        
+        const instanceProfiles = await fetchInstanceProfiles(sourceRoleName);
+
         await createRoleFromExisting(sourceRole, targetRoleName)
         
         if (inlinePolicies.length > 0) {
@@ -19,6 +20,12 @@ let iam
 
         if (managedPolicies.length > 0) {
             await addManagedPolicies(targetRoleName, managedPolicies)
+        }
+
+        if (instanceProfiles.length === 1 && instanceProfiles[0].InstanceProfileName === sourceRoleName) {
+            // The source role had a default instance profile with the same name as the role,
+            // so let's also create the equivalent for the new role.
+            await createMatchingInstanceProfile(targetRoleName);
         }
 
         log('\nDone!')
@@ -139,6 +146,21 @@ async function fetchManagedPolicies(roleName) {
     }
 }
 
+async function fetchInstanceProfiles(roleName) {
+    log('\n--> Fetching source instance profiles...')
+
+    let role
+    try {
+        role = (await getIam().listInstanceProfilesForRole({RoleName: roleName}).promise()).InstanceProfiles
+    } catch (e) {
+        throw new Error(`<-- Failed to fetch source instance profiles: "${e.message}"`)
+    }
+
+    log('<-- Source instance profiles loaded.')
+
+    return role
+}
+
 async function createRoleFromExisting(sourceRole, targetRoleName) {
     log(`\n--> Creating a new role ${targetRoleName}...`)
 
@@ -196,6 +218,35 @@ async function addManagedPolicies(targetRoleName, policies) {
 
     log(`<-- Added ${policies.length} managed policies.`)
 }
+
+async function createMatchingInstanceProfile(targetRoleName) {
+    log(`\n--> Creating a new instance profile ${targetRoleName}...`)
+
+    let targetInstanceProfile
+    try {
+        targetInstanceProfile = (await getIam().createInstanceProfile({
+            InstanceProfileName: targetRoleName,
+        }).promise()).InstanceProfile
+    } catch (e) {
+        throw new Error(`<-- Failed to create target instance profile: "${e.message}"`)
+    }
+
+    log(`<-- Created instance profile ${targetRoleName}.`)
+
+    try {
+        await getIam().addRoleToInstanceProfile({
+            InstanceProfileName: targetRoleName,
+            RoleName: targetRoleName,
+        }).promise()
+    } catch (e) {
+        throw new Error(`<-- Failed to attach target role to instance profile: "${e.message}"`)
+    }
+
+    log(`<-- Attached role ${targetRoleName} to instance profile.`)
+
+    return targetInstanceProfile
+}
+
 
 function getIam() {
     if (!iam) {
